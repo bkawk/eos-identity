@@ -49,6 +49,9 @@ class EosIdentity extends PolymerElement {
       ecc: {
         type: String,
       },
+      hash: {
+        type: String,
+      },
     };
   }
 
@@ -58,11 +61,11 @@ class EosIdentity extends PolymerElement {
       this.error = err;
     })
   }
-
   // generate hash inject in identity and into account if this is the first identity
   createIdentity(password){
     return new Promise((resolve, reject) => {
       this.ecc = eosjs_ecc;
+      this.hash = this._insecureHash();
       let identity = { "hash": "", "privateKey": "", "publicKey": "", "name": "", "accounts": {}, "personal": { "firstname": "", "lastname": "", "email": "", "birthdate": "" }, "locations": [ { "name": "Unnamed Location", "isDefault": false, "phone": "", "address": "", "city": "", "state": "", "country": "", "zipcode": "" } ], "kyc": false, "ridl": -1 }
       return this.$.bip39.generateMnemonic()
       .then((data) => {
@@ -72,6 +75,7 @@ class EosIdentity extends PolymerElement {
         this.keypair = {}
         this.keypair.privateKey = privateKey;
         this.keypair.publicKey = publicKey;
+        identity.hash = this.hash;
         return this.$.bip39.mnemonicfromPassword(password)
       })
       .then((key) => {
@@ -84,6 +88,9 @@ class EosIdentity extends PolymerElement {
       })
       .then((eosAccount) => {
         let account = JSON.parse(eosAccount)
+        if(account.keychain.identities.length == 0){
+          account.hash = this.hash
+        }
         account.keychain.identities.push(identity)
         this.$.store.set('EOSAccount', JSON.stringify(account))
         resolve('identity added')
@@ -93,6 +100,13 @@ class EosIdentity extends PolymerElement {
         reject(this.error)
       })
     })
+  }
+
+  _insecureHash(){
+    let text = "";
+    const possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    for (let i = 0; i < 2048; i++) text += possible.charAt(Math.floor(Math.random() * possible.length));
+    return this.ecc.sha256(text)
   }
 
   _editIdentity(position){
