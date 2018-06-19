@@ -1,7 +1,7 @@
 {
   "name": "eos-identity",
   "main": "eos-identity.js",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "author": "@bkawk",
   "license": "MIT",
   "repository": "https://github.com/bkawk/eos-identity",
