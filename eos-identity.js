@@ -34,6 +34,9 @@ class EosIdentity extends PolymerElement {
         type: String,
         observer: "_createIdentity"
       },
+      name: {
+        type: String,
+      },
       debug: {
         type: Boolean,
         valiue: false,
@@ -56,7 +59,7 @@ class EosIdentity extends PolymerElement {
   }
 
   _createIdentity(){
-    this.createIdentity(this.password)
+    if (this.password && this.name) this.createIdentity(this.password, this.name)
     .catch((err) => {
       this.error = err;
     })
@@ -76,6 +79,7 @@ class EosIdentity extends PolymerElement {
         this.keypair.privateKey = privateKey;
         this.keypair.publicKey = publicKey;
         identity.hash = this.hash;
+        identity.name = name;
         return this.$.bip39.mnemonicfromPassword(password)
       })
       .then((key) => {
