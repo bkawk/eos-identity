@@ -61,8 +61,8 @@ class EosIdentity extends PolymerElement {
       this.error = err;
     })
   }
-  // generate hash inject in identity and into account if this is the first identity
-  createIdentity(password){
+
+  createIdentity(password, name){
     return new Promise((resolve, reject) => {
       this.ecc = eosjs_ecc;
       this.hash = this._insecureHash();
@@ -126,6 +126,12 @@ class EosIdentity extends PolymerElement {
   }
 
   _changePasswords(oldPassword, newPassword) {
+    // check the old password is legit
+    // loop through edenties and undencrypt each private key
+    // re encrypt with the new private key
+  }
+
+  _getBallances() {
     // check the old password is legit
     // loop through edenties and undencrypt each private key
     // re encrypt with the new private key
